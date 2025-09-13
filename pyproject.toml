@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,8 +9,4 @@ description = "A tool to auto translate and synchronize with Google Spreadsheet"
 readme = "README.md"
 requires-python = ">=3.8"
 
-dependencies = [
-    "gspread>=5.0.0",
-    "googletrans==4.0.0rc1",
-    "python-dotenv>=1.0.0",
-]
+dependencies = ["gspread>=5.0.0", "python-dotenv>=1.0.0"]
