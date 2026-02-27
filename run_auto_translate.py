@@ -21,14 +21,21 @@ def main():
 
     for yaml_file in yaml_files:
         print(f'\nProcessing table: {yaml_file.name}')
-        updated_jsons = auto_translate_table(yaml_file, target_languages)
+        try:
+            updated_jsons = auto_translate_table(yaml_file, target_languages)
+        except Exception as e:
+            print(f"Error processing {yaml_file.name}: {e}")
+            continue
         # print(updated_jsons, " updated jsons returned from auto_translate_table in auto_translate.py")
 
         # saving latest jsons in the dedicated json folder
         for language, json_data in updated_jsons.items():
-            json_path = json_output_folder / f"{yaml_file.stem.replace('_en', '')}_{language}.json"
-            write_json(json_path, json_data)
-            print(f"Saved JSON for {language} at: {json_path}")
+            try:
+                json_path = json_output_folder / f"{yaml_file.stem.replace('_en', '')}_{language}.json"
+                write_json(json_path, json_data)
+                print(f"Saved JSON for {language} at: {json_path}")
+            except Exception as e:
+                print(f"Error saving JSON for {language} from {yaml_file.name}: {e}")
 
     print("\n✅ Auto-translation pipeline completed for all tables. Latest JSON files saved in:", json_output_folder)
 

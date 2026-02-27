@@ -4,8 +4,32 @@ from localization_tool.translation.google import GoogleTranslator
 from localization_tool.translation.confidence import estimate_confidence
 from localization_tool.core.table_loader import yaml_to_json, load_json
 from localization_tool.core.table_writer import write_json, write_yaml
+import time
 
 translator = GoogleTranslator()
+MAX_RETRIES = 3
+RETRY_DELAY = 2  # seconds
+
+
+def safe_translate(text, target_language):
+    if not text:
+        return "", 1.0 
+    
+    for attempt in range(MAX_RETRIES):
+        try:
+            translation = translator.translate(text, target_language)
+            if translation is not None and translation.text is not None:
+                confidence = None
+            if translation.extra_data and 'confidence' in translation.extra_data:
+                confidence = translation.extra_data['confidence']
+            return translation.text, confidence
+        except Exception as e:
+            print(f"Translation error on attempt {attempt + 1} for text: '{text}' to language: '{target_language}'. Error: {e}")
+            time.sleep(RETRY_DELAY)
+    
+    print(f"Using original text after {MAX_RETRIES} failed attempts: '{text}' for language: '{target_language}")
+    return text, 1.0
+
 
 
 def auto_translate_table(yaml_path, target_languages):
@@ -40,11 +64,14 @@ def auto_translate_table(yaml_path, target_languages):
             english_value = entry.get("value") or entry.get("new_value")
             # print(translator.translate(english_value, language), " auto_translate.py")
             # print(translator.translate(english_value, language).extra_data, " auto_translate.py")
-            translation = translator.translate(english_value, language)
-            translated_text, google_confidence = translation.text, translation.extra_data.get('confidence')
+            # translation = translator.translate(english_value, language)
+            # translated_text, google_confidence = translation.text, translation.extra_data.get('confidence')
             # print(translated_text, " translated text in auto_translate.py")
             # print(google_confidence, " google confidence in auto_translate.py")
+            translated_text, google_confidence = safe_translate(english_value, language)
             confidence = google_confidence if google_confidence else estimate_confidence(english_value, translated_text)
+
+
             target_json["keys"][key] = {
                 "value": translated_text,
                 "status": "machine",
