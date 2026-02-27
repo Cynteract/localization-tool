@@ -62,6 +62,7 @@ def auto_translate_table(yaml_path, target_languages):
         for entry in changes["create"] + changes["update"]:
             key = entry["key"]
             english_value = entry.get("value") or entry.get("new_value")
+            english_value = english_value if isinstance(english_value, str) else str(english_value)
             # print(translator.translate(english_value, language), " auto_translate.py")
             # print(translator.translate(english_value, language).extra_data, " auto_translate.py")
             # translation = translator.translate(english_value, language)
