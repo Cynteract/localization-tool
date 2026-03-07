@@ -2,6 +2,7 @@ from pathlib import Path
 from localization_tool.pipeline.auto_translate import auto_translate_table
 from localization_tool.utils.file_utils import get_yaml_tables
 from localization_tool.core.table_writer import write_json
+from localization_tool.core.table_loader import yaml_to_json
 
 
 def main():
@@ -16,13 +17,14 @@ def main():
     yaml_files = get_yaml_tables(tables_folder)
     #print(yaml_files, " yaml files found in the tables folder")  # Debugging line to check found YAML files
     if not yaml_files:
-        print("No English YAML tables found in the {tables_folder} folder.")
+        print(f"No English YAML tables found in the {tables_folder} folder.")
         return
 
     for yaml_file in yaml_files:
         print(f'\nProcessing table: {yaml_file.name}')
         try:
-            updated_jsons = auto_translate_table(yaml_file, target_languages)
+            english_json = yaml_to_json(yaml_file)
+            updated_jsons = auto_translate_table(english_json, yaml_file, target_languages)
         except Exception as e:
             print(f"Error processing {yaml_file.name}: {e}")
             continue

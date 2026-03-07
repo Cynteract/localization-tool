@@ -2,7 +2,7 @@ from pathlib import Path
 from localization_tool.core.changeset import calculate_changeset
 from localization_tool.translation.google import GoogleTranslator
 from localization_tool.translation.confidence import estimate_confidence
-from localization_tool.core.table_loader import yaml_to_json, load_json
+from localization_tool.core.table_loader import load_json
 from localization_tool.core.table_writer import write_json, write_yaml
 import time
 
@@ -32,9 +32,7 @@ def safe_translate(text, target_language):
 
 
 
-def auto_translate_table(yaml_path, target_languages):
-    # loading english json
-    english_json = yaml_to_json(yaml_path)
+def auto_translate_table(english_json, yaml_path, target_languages):
     # print(english_json, " english json loaded in auto_translate.py")
     target_jsons = {}
 
